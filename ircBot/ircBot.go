@@ -45,7 +45,6 @@ func (bot *Bot) Connect() (conn net.Conn, err error) {
 
 	log.Printf("Connected to IRC server %s (%s) \n", bot.Server, bot.Conn.RemoteAddr())
 	fmt.Fprintf(bot.Conn, "PASS %s\r\n", bot.Pass)
-	// fmt.Fprintf(bot.Conn, "USER %s 8 * :%s\r\n", bot.Nick, bot.Nick)
 	fmt.Fprintf(bot.Conn, "NICK %s\r\n", bot.Nick)
 	fmt.Fprintf(bot.Conn, "JOIN #%s\r\n", bot.Channel)
 	
