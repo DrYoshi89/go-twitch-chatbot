@@ -17,3 +17,4 @@ func Get() *Configs {
 		Auth: "oauth:token-here", // Token do Bot/ContaNormal
 	}
 }
+
