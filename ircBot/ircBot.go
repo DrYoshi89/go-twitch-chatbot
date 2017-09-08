@@ -47,7 +47,7 @@ func (bot *Bot) Connect() (conn net.Conn, err error) {
 	fmt.Fprintf(bot.Conn, "PASS %s\r\n", bot.Pass)
 	fmt.Fprintf(bot.Conn, "NICK %s\r\n", bot.Nick)
 	fmt.Fprintf(bot.Conn, "JOIN #%s\r\n", bot.Channel)
-	
+
 	conn = bot.Conn
 	return conn, err
 }
@@ -56,7 +56,7 @@ func (bot *Bot) Connect() (conn net.Conn, err error) {
 func (bot *Bot) Maker() (err error) {
 	reader := bufio.NewReader(bot.Conn)
 	bot.Buffer = textproto.NewReader(reader)
-	
+
 	return err
 }
 
