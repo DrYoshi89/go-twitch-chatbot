@@ -26,13 +26,16 @@ func main(){
 		}
 	}()
 
+	// Obtém configurações
+	configs := configs.Get()
+
 	// Cria o bot
 	bot := ircBot.NewBot(
-		"irc.chat.twitch.tv", // Host (default)
-		"6667", // Porta (default)
-		"nick-here", // Nick do Bot/ContaNormal
-		"channel-here", // Canal para se auto conectar
-		"oauth:token-here", // Token do Bot/ContaNormal
+		configs.Host,
+		configs.Port,
+		configs.Nick,
+		configs.Channel,
+		configs.Auth,
 	)
 
 	// Conecta o Bot
