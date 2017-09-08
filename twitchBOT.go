@@ -12,6 +12,8 @@ import (
 	"./ircBot"
 	// Tools package
 	"./tools"
+	// Configs package
+	"./configs"
 	// Includes dos comandos criados
 	"time"
 )
