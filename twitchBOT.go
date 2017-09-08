@@ -6,6 +6,7 @@ import (
 	"os"
 	"log"
 	"regexp"
+	"bufio"
 	"strings"
 	"./ircBot"
 	// Includes dos comandos criados
@@ -43,16 +44,8 @@ func main(){
 	// Inicia a função "PingLoop()" em uma nova thread
 	go bot.PingLoop()
 
-	// Pede ao servidor para enviar informação completa de cada mensagem
-	bot.Send("CAP REQ :twitch.tv/tags")
-	bot.Send("CAP REQ :twitch.tv/membership")
-
 	// Expressão Regular default para tratamento da resposta do servidor
-	// reg, _ := regexp.Compile(":([a-z0-9_]*)!([a-z0-9_]*)@([a-z0-9.-]*) ([A-Z]*) #([a-z0-9_]*) :(![a-z0-9_]*)?(.*)")
-
-	// 
-	inf, _ := regexp.Compile(`([az\-\w]+)=([a-zA-Z0-9_\:\,\-\#\/]*|\s*)`)
-	reg, _ := regexp.Compile(`.*? :([a-zA-Z0-9_\-]+)?@?.*[twitch.tv]\s([a-zA-Z]+)?\s?#([a-zA-Z0-9_\-]+)?\s:(![a-zA-Z0-9_\-]+)?\s?(.*)?`)
+	reg, _ := regexp.Compile(":([a-z0-9_]*)!([a-z0-9_]*)@([a-z0-9.-]*) ([A-Z]*) #([a-z0-9_]*) :(![a-z0-9_]*)?(.*)")
 	for {
 		// Recebe os dados do servidor
 		line, err := bot.Buffer.ReadLine()
@@ -70,42 +63,14 @@ func main(){
 			continue
 		}
 
-		// Passa para o próximo loop evitando comparação de mensagens do sistema
-		// INICIO
-		if strings.Contains(line, ":tmi.twitch.tv PONG ") == true {
-			continue
-		}
-		if strings.Contains(line, "JOIN #") == true {
-			// user joined
-			continue
-		}
-		if strings.Contains(line, ":jtv MODE") == true {
-			// privilegios
-			continue
-		}
-		// FIM
-
 		// Aplica a Expressão Regular
-		i := inf.FindAllStringSubmatch(line, -1)
-		t := reg.FindAllStringSubmatch(line, -1)
+		t := reg.FindStringSubmatch(line)
 		// Se a Expressão Regular retornar 8 argumentos
-		if len(t) == 1 {
-			username := t[0][1]
-			tipo := t[0][2]
-			channel := t[0][3]
-			command := t[0][4]
-			text := t[0][5]
-			var info = make(map[string]string)
-			for _, v := range i {
-				info[v[1]] = v[2]
-			}
-
-			// Exemplo de receive de bits
-			if info["bits"] != "" {
-				bot.Msg(channel, "Usuário "+username+" doou "+info["bits"]+" bits.")
-				time.Sleep(1000 * time.Millisecond)
-				continue
-			}
+		if len(t) >= 8 {
+			username := t[1]
+			channel := t[5]
+			command := t[6]
+			text := t[7]
 
 			// Comandos
 			if command == "!gold" {
