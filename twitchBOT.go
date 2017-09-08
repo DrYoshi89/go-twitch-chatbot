@@ -6,7 +6,6 @@ import (
 	"os"
 	"log"
 	"regexp"
-	"bufio"
 	"strings"
 	// Bot package
 	"./ircBot"
@@ -55,16 +54,13 @@ func main(){
 	bot.Send("CAP REQ :twitch.tv/membership")
 
 	// Expressão Regular default para tratamento da resposta do servidor
-	// reg, _ := regexp.Compile(":([a-z0-9_]*)!([a-z0-9_]*)@([a-z0-9.-]*) ([A-Z]*) #([a-z0-9_]*) :(![a-z0-9_]*)?(.*)")
-
-	// 
 	inf, _ := regexp.Compile(`([az\-\w]+)=([a-zA-Z0-9_\:\,\-\#\/]*|\s*)`)
 	reg, _ := regexp.Compile(`.*? :([a-zA-Z0-9_\-]+)?@?.*[twitch.tv]\s([a-zA-Z]+)?\s?#([a-zA-Z0-9_\-]+)?\s:(![a-zA-Z0-9_\-]+)?\s?(.*)?`)
 	for {
 		// Recebe os dados do servidor
 		line, err := bot.Buffer.ReadLine()
 		if err != nil {
-			log.Fatal("Unable to receive data from IRC server ", err)
+			log.Fatal("Incapaz de receber dados do servidor.", err)
 			os.Exit(1)
 		}
 
@@ -90,11 +86,10 @@ func main(){
 			// privilegios
 			continue
 		}
-		// FIM
 
 		// Aplica a Expressão Regular
-		t := reg.FindStringSubmatch(line)
-		// Se a Expressão Regular retornar 8 argumentos
+		i := inf.FindAllStringSubmatch(line, -1)
+		t := reg.FindAllStringSubmatch(line, -1)
 		if len(t) == 1 {
 			username := t[0][1]
 			tipo := t[0][2]
@@ -102,6 +97,7 @@ func main(){
 			command := t[0][4]
 			text := t[0][5]
 			var info = make(map[string]string)
+			_ = tipo
 			for _, v := range i {
 				info[v[1]] = v[2]
 			}
@@ -114,19 +110,13 @@ func main(){
 			}
 
 			// Comandos
-			if command == "!gold" {
-				request, _ := http.Get("https://wowtoken.info/snapshot.json")
-				r_body, _ := ioutil.ReadAll(request.Body)
-				request.Body.Close()
-				body := string(r_body[:])
+			if command == "!token" {
+				body := tools.Get("https://wowtoken.info/snapshot.json")
 				reg2, _ := regexp.Compile("{\"NA\":{\"timestamp\":([0-9]*),\"raw\":{\"buy\":([0-9]*),\"")
 				json := reg2.FindStringSubmatch(body)
 				gold_ := json[2]
 				gold := gold_[:len(gold_)-3] + "," + gold_[len(gold_)-3:]
-				// fmt.Printf("%s\n", json[2])
-				bot.Msg(channel, "[Bolsa de Azeroth] informa:")
-				time.Sleep(1500 * time.Millisecond)
-				bot.Msg(channel, "[NA] Cotação do OURO: " + gold + "g")
+				bot.Msg(channel, "[NA] Valor do Token: " + gold + "g")
 				continue
 			}
 
@@ -152,23 +142,3 @@ func main(){
 	// Bye bye
 	os.Exit(0)
 }
-	reg, _ := regexp.Compile(":([a-z0-9_]*)!([a-z0-9_]*)@([a-z0-9.-]*) ([A-Z]*) #([a-z0-9_]*) :(![a-z0-9_]*)?(.*)")
-		if len(t) >= 8 {
-			username := t[1]
-			channel := t[5]
-			command := t[6]
-			text := t[7]
-			// Comandos
-			if command == "!gold" {
-				request, _ := http.Get("https://wowtoken.info/snapshot.json")
-				r_body, _ := ioutil.ReadAll(request.Body)
-				request.Body.Close()
-				body := string(r_body[:])
-				reg2, _ := regexp.Compile("{\"NA\":{\"timestamp\":([0-9]*),\"raw\":{\"buy\":([0-9]*),\"")
-				json := reg2.FindStringSubmatch(body)
-				gold_ := json[2]
-				gold := gold_[:len(gold_)-3] + "," + gold_[len(gold_)-3:]
-				// fmt.Printf("%s\n", json[2])
-				bot.Msg(channel, "[Bolsa de Azeroth] informa:")
-				time.Sleep(1500 * time.Millisecond)
-				bot.Msg(channel, "[NA] Cotação do OURO: " + gold + "g")
