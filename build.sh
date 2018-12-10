@@ -4,9 +4,9 @@
 tb_BINNAME='twitchBOT'
 
 tb_SCRIPTNAME="$tb_BINNAME.go"
-tb_PATH=".builds"
+tb_PATH=".bin"
 tb_STAGE="alpha"
-tb_VERSION="0.0.1"
+tb_VERSION=$(cat version)
 tb_OS="linux"
 
 tb_BIN_TEMP="${tb_BINNAME}_temp"
