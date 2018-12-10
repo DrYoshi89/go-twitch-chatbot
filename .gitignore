@@ -1,2 +1,3 @@
-configs/
-error.log
+*.log
+configs/configs.go
+*.db
